@@ -181,3 +181,198 @@ def get_bishop_valid_moves(board, from_square):
             i -= 1
             j -= 1
     return valid_moves
+
+# Define a function to get the valid diagonal moves for a queen
+def get_queen_diagonal_moves(board, from_square):
+    valid_moves = []
+    piece = board[from_square[0]][from_square[1]]
+    color = get_piece_color(piece)
+    if piece == "Q":
+        # Queen diagonal moves
+        # Bottom right diagonal moves
+        i = from_square[0] + 1
+        j = from_square[1] + 1
+        while i < 8 and j < 8:
+            if board[i][j] == " ":
+                valid_moves.append((i, j))
+            elif get_piece_color(board[i][j]) != color:
+                valid_moves.append((i, j))
+                break
+            else:
+                break
+            i += 1
+            j += 1
+        # Top right diagonal moves
+        i = from_square[0] - 1
+        j = from_square[1] + 1
+        while i >= 0 and j < 8:
+            if board[i][j] == " ":
+                valid_moves.append((i, j))
+            elif get_piece_color(board[i][j]) != color:
+                valid_moves.append((i, j))
+                break
+            else:
+                break
+            i -= 1
+            j += 1
+        # Bottom left diagonal moves
+        i = from_square[0] + 1
+        j = from_square[1] - 1
+        while i < 8 and j >= 0:
+            if board[i][j] == " ":
+                valid_moves.append((i, j))
+            elif get_piece_color(board[i][j]) != color:
+                valid_moves.append((i, j))
+                break
+            else:
+                break
+            i += 1
+            j -= 1
+        # Top left diagonal moves
+        i = from_square[0] - 1
+        j = from_square[1] - 1
+        while i >= 0 and j >= 0:
+            if board[i][j] == " ":
+                valid_moves.append((i, j))
+            elif get_piece_color(board[i][j]) != color:
+                valid_moves.append((i, j))
+                break
+            else:
+                break
+            i -= 1
+            j -= 1
+    return valid_moves
+
+# Define a function to get the valid horizontal and vertical moves for a queen
+def get_queen_hv_moves(board, from_square):
+    valid_moves = []
+    piece = board[from_square[0]][from_square[1]]
+    color = get_piece_color(piece)
+    if piece == "Q":
+        # Queen horizontal and vertical moves
+        # Horizontal moves
+        i = from_square[0]
+        j = from_square[1] + 1
+        while j < 8:
+            if board[i][j] == " ":
+                valid_moves.append((i, j))
+            elif get_piece_color(board[i][j]) != color:
+                valid_moves.append((i, j))
+                break
+            else:
+                break
+            j += 1
+        j = from_square[1] - 1
+        while j >= 0:
+            if board[i][j] == " ":
+                valid_moves.append((i, j))
+            elif get_piece_color(board[i][j]) != color:
+                valid_moves.append((i, j))
+                break
+            else:
+                break
+            j -= 1
+        # Vertical moves
+        i = from_square[0] + 1
+        j = from_square[1]
+        while i < 8:
+            if board[i][j] == " ":
+                valid_moves.append((i, j))
+            elif get_piece_color(board[i][j]) != color:
+                valid_moves.append((i, j))
+                break
+            else:
+                break
+            i += 1
+        i = from_square[0] - 1
+        while i >= 0:
+            if board[i][j] == " ":
+                valid_moves.append((i, j))
+            elif get_piece_color(board[i][j]) != color:
+                valid_moves.append((i, j))
+                break
+            else:
+                break
+            i -= 1
+    return valid_moves
+
+# Define a function to get the valid moves for a king
+def get_king_moves(board, from_square):
+    valid_moves = []
+    piece = board[from_square[0]][from_square[1]]
+    color = get_piece_color(piece)
+    if piece == "K":
+        # King moves
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if i == 0 and j == 0:
+                    continue
+                row = from_square[0] + i
+                col = from_square[1] + j
+                if row >= 0 and row < 8 and col >= 0 and col < 8:
+                    if board[row][col] == " " or get_piece_color(board[row][col]) != color:
+                        valid_moves.append((row, col))
+    return valid_moves
+
+# Define a function to evaluate the current board state for the AI player
+def evaluate_board(board):
+    # This is a very basic evaluation function that simply counts the number of pieces on the board for the AI player
+    score = 0
+    for i in range(8):
+        for j in range(8):
+            piece = board[i][j]
+            if piece == "P":
+                score -= 1
+            elif piece == "N" or piece == "B":
+                score -= 3
+            elif piece == "R":
+                score -= 5
+            elif piece == "Q":
+                score -= 9
+            elif piece == "K":
+                score -= 100
+            elif piece == "p":
+                score += 1
+            elif piece == "n" or piece == "b":
+                score += 3
+            elif piece == "r":
+                score += 5
+            elif piece == "q":
+                score += 9
+            elif piece == "k":
+                score += 100
+    return score
+
+# Define a function to get the best move for the AI player using the Minimax algorithm
+def get_ai_move(board, depth):
+    def minimax(board, depth, alpha, beta, maximizing_player):
+        if depth == 0:
+            return evaluate_board(board), None
+        if maximizing_player:
+            max_score = float("-inf")
+            best_move = None
+            for move in get_all_valid_moves(board, "w"):
+                result_board = make_move(board, move)
+                score, _ = minimax(result_board, depth - 1, alpha, beta, False)
+                if score > max_score:
+                    max_score = score
+                    best_move = move
+                alpha = max(alpha, score)
+                if beta <= alpha:
+                    break
+            return max_score, best_move
+        else:
+            min_score = float("inf")
+            best_move = None
+            for move in get_all_valid_moves(board, "b"):
+                result_board = make_move(board, move)
+                score, _ = minimax(result_board, depth - 1, alpha, beta, True)
+                if score < min_score:
+                    min_score = score
+                    best_move = move
+                beta = min(beta, score)
+                if beta <= alpha:
+                    break
+            return min_score, best_move
+    _, best_move = minimax(board, depth, float("-inf"), float("inf"), True)
+    return best_move
