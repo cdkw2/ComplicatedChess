@@ -10,6 +10,23 @@ board = [
     ["r", "n", "b", "q", "k", "b", "n", "r"]
 ]
 
+# Define the piece values for scoring purposes
+PIECE_VALUES = {
+    "P": 1,
+    "N": 3,
+    "B": 3,
+    "R": 5,
+    "Q": 9,
+    "K": 0
+}
+
+# Define the colors of the pieces
+WHITE = "white"
+BLACK = "black"
+
+# Define the current player (white goes first)
+current_player = WHITE
+
 # Define a function to display the chessboard in the console
 def display_board(board):
     for row in board:
@@ -17,18 +34,9 @@ def display_board(board):
         print("| " + " | ".join(row) + " |")
     print("+---+---+---+---+---+---+---+---+")
 
-# Define a function to move a piece on the chessboard
-def move_piece(board, from_square, to_square):
-    from_rank, from_file = from_square
-    to_rank, to_file = to_square
-    piece = board[from_rank][from_file]
-    board[from_rank][from_file] = " "
-    board[to_rank][to_file] = piece
-
-while True:
-    display_board(board)
-    from_square = input("Enter the square of the piece you want to move (e.g. 'e2'): ")
-    to_square = input("Enter the square you want to move the piece to (e.g. 'e4'): ")
-    from_rank, from_file = ord(from_square[1]) - 49, ord(from_square[0]) - 97
-    to_rank, to_file = ord(to_square[1]) - 49, ord(to_square[0]) - 97
-    move_piece(board, (from_rank, from_file), (to_rank, to_file))
+# Define a function to get the color of a piece
+def get_piece_color(piece):
+    if piece.isupper():
+        return WHITE
+    else:
+        return BLACK
